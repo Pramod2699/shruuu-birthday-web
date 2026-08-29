@@ -6,11 +6,11 @@ const CONFIG = {
   name: "Shruti",
   birthDate: "1999-09-21",      // YYYY-MM-DD
   // turningAge is computed below from birthDate vs today — no need to set it by hand.
-  message: `Happy Birthday, Shruti! This is a placeholder note — I'll swap in the real
+  message: `Happy Birthday, Shruti! This is a placeholder note — I’ll swap in the real
       words soon, but the short version is: I love you more than words can say,
       and I hope this year gives you every bit of joy you give everyone else.`,
   signature: "— Pramod",
-  finalWish: "Happy Birthday, my love. Here's to us. 🤍",
+  finalWish: "Happy Birthday, my love. Here’s to us. 🤍",
 
   // song shown in the mini player.
   // Option A: put an mp3 at assets/audio/song.mp3 and leave src as "assets/audio/song.mp3".
@@ -92,7 +92,7 @@ function makePolaroid({src, cap}, i, rot){
   const el = document.createElement('div');
   el.className = 'polaroid';
   const g = gradients[i % gradients.length];
-  el.innerHTML = `<div class="frame" style="--ph-a:${g[0]};--ph-b:${g[1]}"><img src="${src}" alt="" onerror="this.remove()"></div><div class="cap">${cap}</div>`;
+  el.innerHTML = `<div class="frame" style="--ph-a:${g[0]};--ph-b:${g[1]}"><img src="${src}" alt="${cap}" loading="lazy" onerror="this.remove()"></div><div class="cap">${cap}</div>`;
   if(rot !== undefined) el.style.setProperty('--r', rot+'deg');
   return el;
 }
@@ -200,7 +200,9 @@ setInterval(tickAge, 1000);
 /* ---------- music player ---------- */
 const playingState = { isPlaying:false, fakeElapsed:0 };
 function updatePlayButton(){
-  document.getElementById('p-toggle').textContent = playingState.isPlaying ? '❚❚' : '▶';
+  const btn = document.getElementById('p-toggle');
+  btn.textContent = playingState.isPlaying ? '❚❚' : '▶';
+  btn.setAttribute('aria-label', playingState.isPlaying ? 'Pause song' : 'Play song');
 }
 document.getElementById('p-toggle').addEventListener('click', ()=>{
   if(playingState.isPlaying){ bgm.pause(); playingState.isPlaying=false; }
@@ -251,7 +253,9 @@ updateThread();
 /* ---------- shared photo lightbox (opened by tapping a universe photo) ---------- */
 const lightbox = document.getElementById('photo-lightbox');
 function openLightbox(entry){
-  document.getElementById('lightbox-img').src = entry.img.src;
+  const img = document.getElementById('lightbox-img');
+  img.src = entry.img.src;
+  img.alt = entry.cap || 'Photo';
   document.getElementById('lightbox-cap').textContent = entry.cap || '';
   lightbox.classList.add('show');
 }
@@ -259,6 +263,9 @@ function closeLightbox(){ lightbox.classList.remove('show'); }
 lightbox.addEventListener('click', closeLightbox);
 lightbox.querySelector('.lightbox-card').addEventListener('click', e=> e.stopPropagation());
 document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+window.addEventListener('keydown', e=>{
+  if(e.key === 'Escape' && lightbox.classList.contains('show')) closeLightbox();
+});
 
 /* ---------- starfield canvas: twinkling stars + tumbling, draggable, clickable photos ---------- */
 function initStarCanvas(section, photos){
@@ -605,8 +612,10 @@ function buildScrapbook(){
     });
     carousel.appendChild(el);
 
-    const dot = document.createElement('div');
+    const dot = document.createElement('button');
+    dot.type = 'button';
     dot.className = 'dot' + (i===0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Go to page ${i+1}: ${spread.title}`);
     dot.addEventListener('click', ()=> showSpread(i));
     dotsWrap.appendChild(dot);
   });
@@ -617,6 +626,7 @@ function showSpread(i){
   const dots = document.querySelectorAll('#scrapbook-dots .dot');
   sbCurrent = (i + spreads.length) % spreads.length;
   spreads.forEach((el, idx)=> el.classList.toggle('active', idx === sbCurrent));
+  dots.forEach((d, idx)=> d.setAttribute('aria-current', idx === sbCurrent ? 'true' : 'false'));
   dots.forEach((d, idx)=> d.classList.toggle('active', idx === sbCurrent));
 }
 buildScrapbook();
@@ -625,11 +635,15 @@ document.getElementById('sb-next').addEventListener('click', ()=> showSpread(sbC
 
 /* ---------- finale candle + confetti ---------- */
 const candleWrap = document.getElementById('candle-wrap');
-candleWrap.addEventListener('click', ()=>{
+function blowCandle(){
   if(candleWrap.classList.contains('blown')) return;
   candleWrap.classList.add('blown');
   document.getElementById('final-msg').classList.add('show');
   burstConfetti();
+}
+candleWrap.addEventListener('click', blowCandle);
+candleWrap.addEventListener('keydown', e=>{
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); blowCandle(); }
 });
 function burstConfetti(){
   const layer = document.getElementById('confetti-layer');

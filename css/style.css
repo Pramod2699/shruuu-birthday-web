@@ -21,7 +21,7 @@
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
+html{scroll-behavior:smooth; color-scheme:dark;}
 body{
   background:var(--night);
   color:var(--cream);
@@ -31,6 +31,15 @@ body{
 }
 img{max-width:100%;display:block;}
 section{position:relative;width:100%;}
+h1,h2,h3{text-wrap:balance;}
+button{
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+button:focus-visible, [role="button"]:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:3px;
+}
 .eyebrow{
   font-family:var(--body);
   font-size:.7rem;
@@ -44,17 +53,19 @@ section{position:relative;width:100%;}
 .reveal.in{opacity:1; transform:translateY(0);}
 @media (prefers-reduced-motion: reduce){
   .reveal{opacity:1!important; transform:none!important; transition:none!important;}
-  *{animation-duration:.001s !important; animation-iteration-count:1 !important;}
+  *{animation-duration:.001s !important; animation-iteration-count:1 !important; transition-duration:.001s !important;}
 }
 
 /* ============ MEMORY THREAD (signature element) ============ */
 #thread-rail{
   position:fixed;
-  left:14px; top:0; bottom:0;
+  left:calc(14px + env(safe-area-inset-left)); top:0; bottom:0;
   width:26px;
   z-index:40;
   pointer-events:none;
   display:flex; flex-direction:column; align-items:center;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
 }
 #thread-rail svg{position:absolute; left:12px; top:0; height:100%; width:2px;}
 #thread-rail .bulb{
@@ -183,7 +194,7 @@ section{position:relative;width:100%;}
 
 /* mini music player, present from #age onward */
 #player{
-  position:fixed; left:50%; bottom:22px; transform:translateX(-50%);
+  position:fixed; left:50%; bottom:calc(22px + env(safe-area-inset-bottom)); transform:translateX(-50%);
   z-index:60;
   display:flex; align-items:center; gap:12px;
   background:rgba(20,12,10,.72);
@@ -319,6 +330,7 @@ section{position:relative;width:100%;}
 .starfield{
   min-height:100vh; background:var(--night); position:relative; overflow:hidden;
   padding:90px 6vw;
+  user-select:none;
 }
 .starfield canvas{position:absolute; inset:0; width:100%; height:100%;}
 .starfield .grid-title{
@@ -340,6 +352,7 @@ section{position:relative;width:100%;}
   display:flex; align-items:center; justify-content:center;
   opacity:0; pointer-events:none; transition:opacity .3s ease;
   padding:24px;
+  overscroll-behavior:contain;
 }
 #photo-lightbox.show{ opacity:1; pointer-events:auto; }
 #photo-lightbox .lightbox-card{
@@ -457,6 +470,7 @@ section{position:relative;width:100%;}
 .scrapbook-dots{ display:flex; gap:8px; }
 .scrapbook-dots .dot{
   width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.25); cursor:pointer;
+  border:none; padding:0;
   transition:background .25s ease, transform .25s ease;
 }
 .scrapbook-dots .dot.active{ background:var(--gold); transform:scale(1.3); }
