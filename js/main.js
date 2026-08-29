@@ -270,6 +270,70 @@ function initStarCanvas(section){
 }
 document.querySelectorAll('.starfield').forEach(initStarCanvas);
 
+/* ---------- one-section-per-scroll paging ---------- */
+(function(){
+  const pages = Array.from(document.querySelectorAll(
+    '#age, #balloons, #hero, #trail, #star1, #scrapbook, #star2, #finale, footer'
+  ));
+  if(!pages.length) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let current = 0;
+  let animating = false;
+  let unlockTimer = null;
+
+  function nearestPageIndex(){
+    let best = 0, bestDist = Infinity;
+    pages.forEach((p, i)=>{
+      const dist = Math.abs(p.getBoundingClientRect().top);
+      if(dist < bestDist){ bestDist = dist; best = i; }
+    });
+    return best;
+  }
+  current = nearestPageIndex();
+
+  function goTo(index){
+    index = Math.max(0, Math.min(pages.length - 1, index));
+    current = index;
+    animating = true;
+    pages[index].scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    clearTimeout(unlockTimer);
+    unlockTimer = setTimeout(()=>{ animating = false; }, reduceMotion ? 50 : 900);
+  }
+
+  function onWheel(e){
+    if(Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return; // horizontal gesture — let #trail scroll natively
+    e.preventDefault();
+    if(animating) return;
+    goTo(current + (e.deltaY > 0 ? 1 : -1));
+  }
+
+  let touchStartX = null, touchStartY = null;
+  function onTouchStart(e){
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }
+  function onTouchEnd(e){
+    if(touchStartY === null) return;
+    const dx = touchStartX - e.changedTouches[0].clientX;
+    const dy = touchStartY - e.changedTouches[0].clientY;
+    touchStartX = touchStartY = null;
+    if(Math.abs(dy) <= Math.abs(dx) || Math.abs(dy) < 10 || animating) return;
+    goTo(current + (dy > 0 ? 1 : -1));
+  }
+
+  function onKey(e){
+    if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName) || animating) return;
+    if(e.key === 'ArrowDown' || e.key === 'PageDown'){ e.preventDefault(); goTo(current + 1); }
+    else if(e.key === 'ArrowUp' || e.key === 'PageUp'){ e.preventDefault(); goTo(current - 1); }
+  }
+
+  window.addEventListener('wheel', onWheel, { passive:false });
+  window.addEventListener('touchstart', onTouchStart, { passive:true });
+  window.addEventListener('touchend', onTouchEnd, { passive:true });
+  window.addEventListener('keydown', onKey);
+})();
+
 /* ---------- finale candle + confetti ---------- */
 const candleWrap = document.getElementById('candle-wrap');
 candleWrap.addEventListener('click', ()=>{
