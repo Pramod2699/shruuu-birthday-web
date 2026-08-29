@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Shruti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Caveat:wght@500;600;700&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="thread-rail"></div>
+
+<!-- CURTAIN INTRO -->
+<div id="curtain-scene">
+  <div class="curtain-panel left"></div>
+  <div class="curtain-panel right"></div>
+  <span class="curtain-sparkle tl">✦</span><span class="curtain-sparkle tr">✦</span>
+  <span class="curtain-sparkle bl">✦</span><span class="curtain-sparkle br">✦</span>
+  <div id="curtain-label">
+    <h1 id="curtain-title">for Shruti</h1>
+    <button id="curtain-cta">tap to open</button>
+  </div>
+</div>
+
+<!-- AGE REVEAL -->
+<section id="age">
+  <div class="eyebrow reveal">turning</div>
+  <div id="age-number" class="reveal">27</div>
+  <div id="age-sub" class="reveal">years of you</div>
+  <div id="age-counter" class="reveal">
+    <div><span class="num" id="ac-years">0</span><span class="lbl">years</span></div>
+    <div><span class="num" id="ac-days">0</span><span class="lbl">days</span></div>
+    <div><span class="num" id="ac-time">00:00:00</span><span class="lbl">alive right now</span></div>
+  </div>
+</section>
+
+<!-- MUSIC PLAYER -->
+<div id="player">
+  <div class="art"></div>
+  <div class="meta">
+    <div class="title" id="p-title">Our Song (tmp)</div>
+    <div class="sub" id="p-sub">Birthday Playlist</div>
+    <div class="bar"><i id="p-bar"></i></div>
+    <div class="times"><span id="p-cur">0:00</span><span id="p-dur">3:17</span></div>
+  </div>
+  <button id="p-toggle" aria-label="Play song">▶</button>
+</div>
+<audio id="bgm" loop preload="none"></audio>
+
+<!-- BALLOON LETTERS -->
+<section id="balloons">
+  <span class="deco-emoji" style="top:8%; left:10%;">🎈</span>
+  <span class="deco-emoji" style="top:14%; right:12%; animation-delay:1s;">🎉</span>
+  <span class="deco-emoji" style="bottom:12%; left:16%; animation-delay:2s;">🎂</span>
+  <span class="deco-emoji" style="bottom:16%; right:16%; animation-delay:.5s;">🎁</span>
+  <span class="deco-emoji" style="top:30%; left:6%; animation-delay:1.6s; font-size:1.8rem;">✨</span>
+  <span class="deco-emoji" style="top:24%; right:8%; animation-delay:2.4s; font-size:1.8rem;">🎊</span>
+  <span class="deco-emoji" style="bottom:30%; right:34%; animation-delay:.9s; font-size:1.6rem;">💖</span>
+  <div class="wrap">
+    <h2>
+      <span class="l1" id="hb-line1"></span>
+      <span class="l2" id="hb-line2"></span>
+    </h2>
+  </div>
+</section>
+
+<!-- HERO / MESSAGE -->
+<section id="hero">
+  <div class="copy reveal">
+    <div class="eyebrow">made for you</div>
+    <h2>Happy<br>Birthday <em id="hero-name">Shruti</em></h2>
+    <p class="msg" id="hero-msg">
+      <!-- EDIT ME: replace with your real message -->
+      Happy Birthday, Shruti! This is a placeholder note — I'll swap in the real
+      words soon, but the short version is: I love you more than words can say,
+      and I hope this year gives you every bit of joy you give everyone else.
+    </p>
+    <div class="signature">— Pramod</div>
+  </div>
+  <div class="collage reveal">
+    <div class="ring" id="ring"></div>
+  </div>
+</section>
+
+<!-- TRAIL -->
+<section id="trail"></section>
+
+<!-- STARFIELD 1 -->
+<section class="starfield" id="star1">
+  <canvas></canvas>
+  <div class="grid-title reveal"><h3>every version of you</h3></div>
+  <div class="star-photos" id="star-photos-1"></div>
+</section>
+
+<!-- SCRAPBOOK -->
+<section id="scrapbook">
+  <div class="page">
+    <h3 class="reveal">little things I keep</h3>
+    <span class="sticker" style="top:6%; left:8%; --r:-10deg;">🌙</span>
+    <span class="sticker" style="top:4%; right:10%; --r:8deg;">📷</span>
+    <span class="sticker" style="top:40%; left:4%; --r:-6deg;">🌹</span>
+    <span class="sticker" style="bottom:20%; right:6%; --r:10deg;">🎀</span>
+    <span class="sticker" style="bottom:8%; left:14%; --r:-4deg;">✨</span>
+    <span class="sticker" style="top:36%; right:16%; --r:6deg;">🎵</span>
+    <span class="sticker" style="top:20%; left:44%; --r:-8deg;">💫</span>
+    <span class="sticker" style="bottom:30%; left:36%; --r:12deg;">💌</span>
+    <span class="sticker butterfly" style="top:16%; left:20%; --r:-14deg;">🦋</span>
+    <span class="sticker butterfly" style="bottom:12%; right:30%; --r:10deg; animation-delay:1.4s;">🦋</span>
+    <span class="sticker butterfly" style="top:54%; right:8%; --r:-6deg; animation-delay:2.6s;">🦋</span>
+    <div class="tape" style="top:14%; left:30%;"></div>
+    <div class="tape" style="top:44%; right:26%; --r:12deg;"></div>
+    <div class="polaroid reveal" style="top:12%; left:28%; --r:-4deg;"><div class="frame" style="--ph-a:#f0c48a;--ph-b:#e79aa0;"></div><div class="cap">us</div></div>
+    <div class="polaroid reveal" style="top:38%; right:20%; --r:5deg;"><div class="frame" style="--ph-a:#c9a0e8;--ph-b:#8ab7e8;"></div><div class="cap">that day</div></div>
+  </div>
+</section>
+
+<!-- STARFIELD 2 -->
+<section class="starfield" id="star2">
+  <canvas></canvas>
+  <div class="grid-title reveal"><h3>reasons I'm lucky</h3></div>
+  <div class="star-photos" id="star-photos-2"></div>
+</section>
+
+<!-- FINALE -->
+<section id="finale">
+  <div class="eyebrow reveal">one more thing</div>
+  <h3 class="reveal">Make a wish, Shruti. I already have everything I wished for.</h3>
+  <div id="candle-wrap" class="reveal">
+    <span id="candle">🕯️</span><span class="smoke">💨</span>
+    <div id="candle-hint">tap the candle</div>
+  </div>
+  <div id="final-msg">Happy Birthday, my love. Here's to us. 🤍</div>
+</section>
+<div id="confetti-layer"></div>
+
+<footer>made with love, for Shruti's birthday</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
