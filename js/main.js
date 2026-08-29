@@ -248,11 +248,26 @@ function updateThread(){
 window.addEventListener('scroll', updateThread, {passive:true});
 updateThread();
 
-/* ---------- starfield canvas: twinkling stars + tumbling photos ---------- */
+/* ---------- shared photo lightbox (opened by tapping a universe photo) ---------- */
+const lightbox = document.getElementById('photo-lightbox');
+function openLightbox(entry){
+  document.getElementById('lightbox-img').src = entry.img.src;
+  document.getElementById('lightbox-cap').textContent = entry.cap || '';
+  lightbox.classList.add('show');
+}
+function closeLightbox(){ lightbox.classList.remove('show'); }
+lightbox.addEventListener('click', closeLightbox);
+lightbox.querySelector('.lightbox-card').addEventListener('click', e=> e.stopPropagation());
+document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+
+/* ---------- starfield canvas: twinkling stars + tumbling, draggable, clickable photos ---------- */
 function initStarCanvas(section, photos){
   const canvas = section.querySelector('canvas');
   const ctx = canvas.getContext('2d');
+  const FIELD_PAD = 0.4;
   let w,h,stars=[],sprites=[];
+  let panX = 0, panY = 0;
+  let dragging = false, dragLastX = 0, dragLastY = 0, moved = 0;
   const entries = photos.map(p=>{
     const img = new Image();
     img.src = p.src;
@@ -261,36 +276,44 @@ function initStarCanvas(section, photos){
     return { img, cap: p.cap };
   });
 
+  function randX(){ return (Math.random()*(1+2*FIELD_PAD) - FIELD_PAD) * w; }
   function makeSprite(entry, y){
     const depth = 0.35 + Math.random()*0.85;
     return {
       entry, depth,
-      x: Math.random()*w,
+      x: randX(),
       y: y !== undefined ? y : -100*depth,
       rot: Math.random()*40 - 20,
       spin: Math.random()*0.3 - 0.15,
       driftPhase: Math.random()*Math.PI*2,
       driftAmp: 10 + Math.random()*20,
       size: (46 + Math.random()*30) * depth,
+      _x:0, _y:0, _rot:0, _size:0, _capH:0,
     };
   }
   function resize(){
     w = canvas.width = section.clientWidth;
     h = canvas.height = section.clientHeight;
     stars = Array.from({length: Math.floor(w*h/9000)}, ()=>({
-      x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.4+.3, s: Math.random()*.5+.1
+      x: randX(), y: Math.random()*h, r: Math.random()*1.4+.3, s: Math.random()*.5+.1
     }));
     if(!sprites.length && entries.length){
       const count = Math.max(entries.length*3, 14);
       sprites = Array.from({length:count}, (_,i)=> makeSprite(entries[i % entries.length], Math.random()*h));
     }
+    const maxX = w*FIELD_PAD, maxY = h*FIELD_PAD;
+    panX = Math.max(-maxX, Math.min(maxX, panX));
+    panY = Math.max(-maxY, Math.min(maxY, panY));
   }
   function drawSprite(sp){
     const s = sp.size, pad = s*0.08, photoSize = s - pad*2, capH = s*0.28;
-    const x = sp.x + Math.sin(sp.driftPhase)*sp.driftAmp;
+    const parallax = 0.5 + sp.depth*0.5;
+    const x = sp.x + Math.sin(sp.driftPhase)*sp.driftAmp + panX*parallax;
+    const y = sp.y + panY*parallax;
+    sp._x = x; sp._y = y; sp._rot = sp.rot; sp._size = s; sp._capH = capH;
     ctx.save();
     ctx.globalAlpha = 0.5 + sp.depth*0.45;
-    ctx.translate(x, sp.y);
+    ctx.translate(x, y);
     ctx.rotate(sp.rot * Math.PI/180);
     ctx.shadowColor = 'rgba(0,0,0,.45)';
     ctx.shadowBlur = 10*sp.depth;
@@ -322,14 +345,17 @@ function initStarCanvas(section, photos){
         if(dist < LINK_DIST){
           ctx.strokeStyle = `rgba(217,164,65,${(1 - dist/LINK_DIST) * 0.18})`;
           ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(a.x+panX*0.4, a.y+panY*0.4);
+          ctx.lineTo(b.x+panX*0.4, b.y+panY*0.4);
+          ctx.stroke();
         }
       }
     }
     ctx.fillStyle = '#fff';
     stars.forEach(st=>{
       ctx.globalAlpha = 0.4 + 0.6*Math.sin(Date.now()*0.001*st.s + st.x);
-      ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(st.x+panX*0.4, st.y+panY*0.4, st.r, 0, Math.PI*2); ctx.fill();
     });
     ctx.globalAlpha = 1;
 
@@ -338,13 +364,64 @@ function initStarCanvas(section, photos){
       sp.rot += sp.spin;
       sp.driftPhase += 0.006;
       drawSprite(sp);
-      if(sp.y - sp.size > h + 40){
-        Object.assign(sp, makeSprite(sp.entry));
+      if(sp._y - sp._size > h + 40){
+        const fresh = makeSprite(sp.entry);
+        const parallax = 0.5 + fresh.depth*0.5;
+        fresh.y = -100*fresh.depth - panY*parallax;
+        Object.assign(sp, fresh);
       }
     });
 
     requestAnimationFrame(draw);
   }
+  function hitTestSprite(px, py){
+    for(let k = sprites.length-1; k>=0; k--){
+      const sp = sprites[k];
+      const dx = px - sp._x, dy = py - sp._y;
+      const theta = sp._rot * Math.PI/180;
+      const cos = Math.cos(theta), sin = Math.sin(theta);
+      const lx = dx*cos + dy*sin;
+      const ly = -dx*sin + dy*cos;
+      if(Math.abs(lx) <= sp._size/2 && Math.abs(ly) <= sp._size/2 + sp._capH/2) return sp;
+    }
+    return null;
+  }
+  function clampPan(){
+    const maxX = w*FIELD_PAD, maxY = h*FIELD_PAD;
+    panX = Math.max(-maxX, Math.min(maxX, panX));
+    panY = Math.max(-maxY, Math.min(maxY, panY));
+  }
+  canvas.style.cursor = 'grab';
+  canvas.style.touchAction = 'none';
+  canvas.addEventListener('pointerdown', e=>{
+    dragging = true; moved = 0;
+    dragLastX = e.clientX; dragLastY = e.clientY;
+    canvas.setPointerCapture(e.pointerId);
+    canvas.style.cursor = 'grabbing';
+  });
+  canvas.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    const dx = e.clientX - dragLastX, dy = e.clientY - dragLastY;
+    dragLastX = e.clientX; dragLastY = e.clientY;
+    moved += Math.abs(dx) + Math.abs(dy);
+    panX += dx; panY += dy;
+    clampPan();
+  });
+  function endDrag(e){
+    dragging = false;
+    canvas.style.cursor = 'grab';
+    if(moved < 6){
+      const rect = canvas.getBoundingClientRect();
+      const hit = hitTestSprite(e.clientX - rect.left, e.clientY - rect.top);
+      if(hit) openLightbox(hit.entry);
+    }
+  }
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
+  ['touchstart','touchmove','touchend'].forEach(evt=>{
+    canvas.addEventListener(evt, e=> e.stopPropagation(), {passive:true});
+  });
+
   window.addEventListener('resize', resize);
   resize(); draw();
 }
