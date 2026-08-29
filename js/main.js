@@ -67,6 +67,7 @@ const birth = new Date(CONFIG.birthDate + 'T00:00:00');
 /* ---------- apply config to DOM ---------- */
 document.getElementById('curtain-title').textContent = `for ${CONFIG.name}`;
 document.getElementById('age-number').textContent = CONFIG.turningAge;
+document.getElementById('age-number').setAttribute('data-text', CONFIG.turningAge);
 document.getElementById('hero-name').textContent = CONFIG.name;
 document.getElementById('hero-msg').textContent = CONFIG.message.trim();
 document.querySelector('#hero .signature').textContent = CONFIG.signature;
@@ -157,7 +158,35 @@ document.getElementById('curtain-cta').addEventListener('click', ()=>{
   bgm.play().catch(()=>{ /* no real audio file yet — player still shows visually */ });
   playingState.isPlaying = true;
   updatePlayButton();
+  setTimeout(igniteAgeNumber, 500);
 }, {once:true});
+
+/* ---------- age number burn-in ---------- */
+function igniteAgeNumber(){
+  const num = document.getElementById('age-number');
+  num.classList.add('ignite');
+  const rect = num.getBoundingClientRect();
+  const layer = document.getElementById('confetti-layer');
+  const colors = ['#fff7c9','#ffd27a','#ff9a3d','#e8551f'];
+  for(let i=0;i<26;i++){
+    const s = document.createElement('div');
+    s.className = 'ember';
+    s.style.left = (rect.left + Math.random()*rect.width) + 'px';
+    s.style.top = (rect.top + rect.height*(0.45 + Math.random()*0.45)) + 'px';
+    s.style.background = colors[Math.floor(Math.random()*colors.length)];
+    const rise = 50 + Math.random()*100;
+    const drift = Math.random()*50 - 25;
+    const dur = 0.8 + Math.random()*0.8;
+    const delay = Math.random()*0.4;
+    s.style.transition = `transform ${dur}s ease-out ${delay}s, opacity ${dur}s ease-in ${delay}s`;
+    layer.appendChild(s);
+    requestAnimationFrame(()=>{
+      s.style.transform = `translate(${drift}px, ${-rise}px)`;
+      s.style.opacity = '0';
+    });
+    setTimeout(()=> s.remove(), (dur+delay)*1000 + 150);
+  }
+}
 
 /* ---------- age counter (live) ---------- */
 function tickAge(){
