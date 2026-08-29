@@ -124,17 +124,6 @@ CONFIG.trailPhotos.forEach((p,i)=>{
   trail.appendChild(pol);
 });
 
-/* starfields */
-function fillStar(containerId, photos){
-  const c = document.getElementById(containerId);
-  photos.forEach((p,i)=>{
-    const rot = (i % 2 === 0) ? -5 : 5;
-    c.appendChild(makePolaroid(p, i, rot));
-  });
-}
-fillStar('star-photos-1', CONFIG.starfieldOne);
-fillStar('star-photos-2', CONFIG.starfieldTwo);
-
 /* balloon letters */
 function buildBalloonLine(id, text){
   const el = document.getElementById(id);
@@ -259,17 +248,68 @@ function updateThread(){
 window.addEventListener('scroll', updateThread, {passive:true});
 updateThread();
 
-/* ---------- starfield canvas particles ---------- */
-function initStarCanvas(section){
+/* ---------- starfield canvas: twinkling stars + tumbling photos ---------- */
+function initStarCanvas(section, photos){
   const canvas = section.querySelector('canvas');
   const ctx = canvas.getContext('2d');
-  let w,h,stars=[];
+  let w,h,stars=[],sprites=[];
+  const entries = photos.map(p=>{
+    const img = new Image();
+    img.src = p.src;
+    img.onload = ()=>{ img.loaded = true; };
+    img.onerror = ()=>{ img.broken = true; };
+    return { img, cap: p.cap };
+  });
+
+  function makeSprite(entry, y){
+    const depth = 0.35 + Math.random()*0.85;
+    return {
+      entry, depth,
+      x: Math.random()*w,
+      y: y !== undefined ? y : -100*depth,
+      rot: Math.random()*40 - 20,
+      spin: Math.random()*0.3 - 0.15,
+      driftPhase: Math.random()*Math.PI*2,
+      driftAmp: 10 + Math.random()*20,
+      size: (46 + Math.random()*30) * depth,
+    };
+  }
   function resize(){
     w = canvas.width = section.clientWidth;
     h = canvas.height = section.clientHeight;
     stars = Array.from({length: Math.floor(w*h/9000)}, ()=>({
       x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.4+.3, s: Math.random()*.5+.1
     }));
+    if(!sprites.length && entries.length){
+      const count = Math.max(entries.length*3, 14);
+      sprites = Array.from({length:count}, (_,i)=> makeSprite(entries[i % entries.length], Math.random()*h));
+    }
+  }
+  function drawSprite(sp){
+    const s = sp.size, pad = s*0.08, photoSize = s - pad*2, capH = s*0.28;
+    const x = sp.x + Math.sin(sp.driftPhase)*sp.driftAmp;
+    ctx.save();
+    ctx.globalAlpha = 0.5 + sp.depth*0.45;
+    ctx.translate(x, sp.y);
+    ctx.rotate(sp.rot * Math.PI/180);
+    ctx.shadowColor = 'rgba(0,0,0,.45)';
+    ctx.shadowBlur = 10*sp.depth;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(-s/2, -s/2 - capH/2, s, s + capH);
+    ctx.shadowBlur = 0;
+    if(sp.entry.img.loaded){
+      ctx.drawImage(sp.entry.img, -s/2+pad, -s/2+pad - capH/2, photoSize, photoSize);
+    } else {
+      ctx.fillStyle = '#caa46b';
+      ctx.fillRect(-s/2+pad, -s/2+pad - capH/2, photoSize, photoSize);
+    }
+    if(sp.depth > 0.9 && sp.entry.cap){
+      ctx.fillStyle = '#333';
+      ctx.font = `600 ${(s*0.16).toFixed(1)}px 'Caveat', cursive`;
+      ctx.textAlign = 'center';
+      ctx.fillText(sp.entry.cap, 0, s/2 + capH*0.55);
+    }
+    ctx.restore();
   }
   function draw(){
     ctx.clearRect(0,0,w,h);
@@ -292,12 +332,26 @@ function initStarCanvas(section){
       ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI*2); ctx.fill();
     });
     ctx.globalAlpha = 1;
+
+    sprites.forEach(sp=>{
+      sp.y += 0.35 + sp.depth*0.55;
+      sp.rot += sp.spin;
+      sp.driftPhase += 0.006;
+      drawSprite(sp);
+      if(sp.y - sp.size > h + 40){
+        Object.assign(sp, makeSprite(sp.entry));
+      }
+    });
+
     requestAnimationFrame(draw);
   }
   window.addEventListener('resize', resize);
   resize(); draw();
 }
-document.querySelectorAll('.starfield').forEach(initStarCanvas);
+document.querySelectorAll('.starfield').forEach(section=>{
+  const photos = section.id === 'star2' ? CONFIG.starfieldTwo : CONFIG.starfieldOne;
+  initStarCanvas(section, photos);
+});
 
 /* ---------- one-section-per-scroll paging ---------- */
 (function(){
@@ -362,6 +416,135 @@ document.querySelectorAll('.starfield').forEach(initStarCanvas);
   window.addEventListener('touchend', onTouchEnd, { passive:true });
   window.addEventListener('keydown', onKey);
 })();
+
+/* ---------- scrapbook carousel ---------- */
+const scrapbookSpreads = [
+  { theme:'keepsake', title:'little things I keep',
+    stickers:[
+      {e:'🌙', style:'top:6%; left:8%; --r:-10deg;'},
+      {e:'📷', style:'top:4%; right:10%; --r:8deg;'},
+      {e:'🌹', style:'top:40%; left:4%; --r:-6deg;'},
+      {e:'🎀', style:'bottom:20%; right:6%; --r:10deg;'},
+      {e:'✨', style:'bottom:8%; left:14%; --r:-4deg;'},
+      {e:'🎵', style:'top:36%; right:16%; --r:6deg;'},
+      {e:'💫', style:'top:20%; left:44%; --r:-8deg;'},
+      {e:'💌', style:'bottom:30%; left:36%; --r:12deg;'},
+    ],
+    butterflies:[
+      'top:16%; left:20%; --r:-14deg;',
+      'bottom:12%; right:30%; --r:10deg; animation-delay:1.4s;',
+      'top:54%; right:8%; --r:-6deg; animation-delay:2.6s;',
+    ],
+    tapes:['top:14%; left:30%;', 'top:44%; right:26%; --r:12deg;'],
+    photos:[
+      { p: CONFIG.ringPhotos[0], style:'top:12%; left:28%; --r:-4deg;' },
+      { p: CONFIG.ringPhotos[1], style:'top:38%; right:20%; --r:5deg;' },
+    ],
+  },
+  { theme:'vinyl', title:'our soundtrack',
+    stickers:[
+      {e:'🎧', style:'top:8%; right:10%; --r:8deg;'},
+      {e:'💋', style:'bottom:14%; left:10%; --r:-10deg;'},
+      {e:'🎶', style:'top:44%; left:6%; --r:-6deg;'},
+      {e:'✨', style:'bottom:8%; right:34%; --r:6deg;'},
+    ],
+    decos:[
+      { type:'vinyl', style:'top:10%; left:38%;' },
+      { type:'cassette', style:'bottom:12%; right:8%; --r:-8deg;' },
+    ],
+    photos:[
+      { p: CONFIG.ringPhotos[2], style:'top:34%; left:8%; --r:-5deg;' },
+      { p: CONFIG.ringPhotos[3], style:'top:14%; right:26%; --r:6deg;' },
+    ],
+  },
+  { theme:'fabric', title:'cozy days',
+    stickers:[
+      {e:'🧸', style:'top:6%; left:10%; --r:-8deg;'},
+      {e:'🌼', style:'top:8%; right:12%; --r:8deg;'},
+      {e:'🎀', style:'bottom:16%; left:8%; --r:-10deg;'},
+      {e:'🍓', style:'bottom:10%; right:34%; --r:6deg;'},
+    ],
+    tapes:['top:16%; left:44%;'],
+    photos:[
+      { p: CONFIG.ringPhotos[4], style:'top:34%; left:30%; --r:-4deg;' },
+      { p: CONFIG.ringPhotos[5], style:'top:10%; right:8%; --r:5deg;' },
+    ],
+  },
+  { theme:'kraft', title:'our little world',
+    stickers:[
+      {e:'⭐', style:'top:8%; left:8%; --r:-8deg;'},
+      {e:'✉️', style:'bottom:12%; right:10%; --r:8deg;'},
+      {e:'🌙', style:'top:44%; right:6%; --r:-6deg;'},
+      {e:'📌', style:'bottom:34%; left:6%; --r:10deg;'},
+    ],
+    tapes:['top:12%; right:38%;'],
+    photos:[
+      { p: CONFIG.ringPhotos[6], style:'top:14%; left:26%; --r:-5deg;' },
+      { p: CONFIG.ringPhotos[7], style:'top:38%; right:22%; --r:6deg;' },
+    ],
+  },
+];
+
+let sbPhotoIndex = 0;
+function buildScrapbook(){
+  const carousel = document.getElementById('scrapbook-carousel');
+  const dotsWrap = document.getElementById('scrapbook-dots');
+  scrapbookSpreads.forEach((spread, i)=>{
+    const el = document.createElement('div');
+    el.className = `spread theme-${spread.theme}` + (i===0 ? ' active' : '');
+    const h3 = document.createElement('h3');
+    h3.textContent = spread.title;
+    el.appendChild(h3);
+    (spread.stickers||[]).forEach(st=>{
+      const s = document.createElement('span');
+      s.className = 'sticker';
+      s.setAttribute('style', st.style);
+      s.textContent = st.e;
+      el.appendChild(s);
+    });
+    (spread.butterflies||[]).forEach(style=>{
+      const s = document.createElement('span');
+      s.className = 'sticker butterfly';
+      s.setAttribute('style', style);
+      s.textContent = '🦋';
+      el.appendChild(s);
+    });
+    (spread.tapes||[]).forEach(style=>{
+      const t = document.createElement('div');
+      t.className = 'tape';
+      t.setAttribute('style', style);
+      el.appendChild(t);
+    });
+    (spread.decos||[]).forEach(d=>{
+      const dEl = document.createElement('div');
+      dEl.className = d.type === 'vinyl' ? 'vinyl-deco' : 'cassette-deco';
+      dEl.setAttribute('style', d.style);
+      el.appendChild(dEl);
+    });
+    (spread.photos||[]).forEach(ph=>{
+      const pol = makePolaroid(ph.p, sbPhotoIndex++, undefined);
+      pol.setAttribute('style', (pol.getAttribute('style')||'') + ph.style);
+      el.appendChild(pol);
+    });
+    carousel.appendChild(el);
+
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i===0 ? ' active' : '');
+    dot.addEventListener('click', ()=> showSpread(i));
+    dotsWrap.appendChild(dot);
+  });
+}
+let sbCurrent = 0;
+function showSpread(i){
+  const spreads = document.querySelectorAll('#scrapbook-carousel .spread');
+  const dots = document.querySelectorAll('#scrapbook-dots .dot');
+  sbCurrent = (i + spreads.length) % spreads.length;
+  spreads.forEach((el, idx)=> el.classList.toggle('active', idx === sbCurrent));
+  dots.forEach((d, idx)=> d.classList.toggle('active', idx === sbCurrent));
+}
+buildScrapbook();
+document.getElementById('sb-prev').addEventListener('click', ()=> showSpread(sbCurrent - 1));
+document.getElementById('sb-next').addEventListener('click', ()=> showSpread(sbCurrent + 1));
 
 /* ---------- finale candle + confetti ---------- */
 const candleWrap = document.getElementById('candle-wrap');
