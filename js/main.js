@@ -91,7 +91,7 @@ function makePolaroid({src, cap}, i, rot){
   const el = document.createElement('div');
   el.className = 'polaroid';
   const g = gradients[i % gradients.length];
-  el.innerHTML = `<div class="frame" style="--ph-a:${g[0]};--ph-b:${g[1]}"><img src="${src}" alt="${cap}" loading="lazy" onerror="this.remove()"></div><div class="cap">${cap}</div>`;
+  el.innerHTML = `<div class="frame" style="--ph-a:${g[0]};--ph-b:${g[1]}"><img src="${src}" alt="${cap}" loading="lazy" onerror="this.remove()"></div>`;
   if(rot !== undefined) el.style.setProperty('--r', rot+'deg');
   return el;
 }
@@ -108,7 +108,7 @@ ringPhotos.forEach((p, i)=>{
   wrap.style.marginTop = '-84px';
   wrap.style.transform = `rotate(${angle}deg) translate(${R}px) rotate(${-angle}deg)`;
   const g = gradients[i % gradients.length];
-  wrap.innerHTML = `<div class="frame" style="--ph-a:${g[0]};--ph-b:${g[1]}"><img src="${p.src}" alt="" onerror="this.remove()"></div><div class="cap">${p.cap}</div>`;
+  wrap.innerHTML = `<div class="frame" style="--ph-a:${g[0]};--ph-b:${g[1]}"><img src="${p.src}" alt="${p.cap}" loading="lazy" onerror="this.remove()"></div>`;
   ring.appendChild(wrap);
 });
 
@@ -244,7 +244,6 @@ function openLightbox(entry){
   const img = document.getElementById('lightbox-img');
   img.src = entry.img.src;
   img.alt = entry.cap || 'Photo';
-  document.getElementById('lightbox-cap').textContent = entry.cap || '';
   lightbox.classList.add('show');
 }
 function closeLightbox(){ lightbox.classList.remove('show'); }
@@ -320,12 +319,6 @@ function initStarCanvas(section, photos){
     } else {
       ctx.fillStyle = '#caa46b';
       ctx.fillRect(-s/2+pad, -s/2+pad - capH/2, photoSize, photoSize);
-    }
-    if(sp.depth > 0.9 && sp.entry.cap){
-      ctx.fillStyle = '#333';
-      ctx.font = `600 ${(s*0.16).toFixed(1)}px 'Caveat', cursive`;
-      ctx.textAlign = 'center';
-      ctx.fillText(sp.entry.cap, 0, s/2 + capH*0.55);
     }
     ctx.restore();
   }

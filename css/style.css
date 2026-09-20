@@ -307,10 +307,6 @@ button:focus-visible, [role="button"]:focus-visible{
   font-family:var(--body); font-size:.6rem; letter-spacing:.05em; color:rgba(255,255,255,.85);
   text-transform:uppercase; text-align:center; padding:8px;
 }
-.polaroid .cap{
-  position:absolute; bottom:8px; left:0; right:0; text-align:center;
-  font-family:var(--script); font-size:1.1rem; color:#333;
-}
 .ring .polaroid{position:absolute; top:50%; left:50%;}
 .ring .polaroid > *{animation:counterspin 90s linear infinite;}
 @keyframes counterspin{to{transform:rotate(-360deg);}}
@@ -355,9 +351,6 @@ button:focus-visible, [role="button"]:focus-visible{
 #photo-lightbox img{
   width:100%; max-height:56vh; object-fit:cover; border-radius:2px; display:block;
   background:linear-gradient(135deg,#e8b98a,#e88b8b);
-}
-#lightbox-cap{
-  margin-top:14px; font-family:var(--script); font-size:1.4rem; color:#333; text-align:center;
 }
 #lightbox-close{
   position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
