@@ -24,11 +24,11 @@ I can’t wait to build the rest of our journey together.`,
   //   like .mp3 and allow cross-origin playback — most file-hosting/CDN
   //   links work, most streaming-service share links do NOT).
   song: {
-    title: "Our Song (tmp)",
+    title: "Our Song",
     subtitle: "Birthday Playlist",
     src: "assets/audio/song.mp3",   // <-- EDIT ME: local file path or a direct https:// URL
-    durationLabel: "3:17",
-    durationSeconds: 197
+    durationLabel: "4:44",
+    durationSeconds: 284
   },
   // Ring collage on the cream hero section (8 tmp slots)
   ringPhotos: [
