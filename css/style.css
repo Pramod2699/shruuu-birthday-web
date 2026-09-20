@@ -271,6 +271,7 @@ button:focus-visible, [role="button"]:focus-visible{
 }
 #hero p.msg{
   margin-top:26px; font-size:1.05rem; line-height:1.75; color:#4a3a2c; max-width:46ch;
+  white-space:pre-line;
 }
 #hero .signature{
   margin-top:24px; font-family:var(--script); font-size:1.4rem; color:var(--coral);
@@ -313,18 +314,6 @@ button:focus-visible, [role="button"]:focus-visible{
 .ring .polaroid{position:absolute; top:50%; left:50%;}
 .ring .polaroid > *{animation:counterspin 90s linear infinite;}
 @keyframes counterspin{to{transform:rotate(-360deg);}}
-
-/* trail strip */
-#trail{
-  background:var(--cream); padding:0 6vw;
-  min-height:100vh;
-  display:flex; align-items:center; gap:26px; overflow-x:auto; scrollbar-width:none;
-}
-#trail::-webkit-scrollbar{display:none;}
-#trail .polaroid{flex:none; transform:rotate(var(--r,0deg));}
-#trail .heart{
-  position:absolute; top:-14px; right:-10px; font-size:1.3rem; filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));
-}
 
 /* ================= STARFIELD ================= */
 .starfield{
@@ -401,10 +390,6 @@ button:focus-visible, [role="button"]:focus-visible{
   font-family:var(--script); font-size:2.2rem; text-align:center;
   position:relative; z-index:2; margin:30px 0 0;
 }
-.spread.theme-keepsake{
-  background:repeating-linear-gradient(#f6e3e0 0 40px, #f0d6d1 40px 41px), #f6e3e0;
-}
-.spread.theme-keepsake h3{ color:#8a3b3b; }
 .spread.theme-vinyl{
   background:radial-gradient(ellipse at 30% 20%, #2b2224 0%, #161112 70%);
 }

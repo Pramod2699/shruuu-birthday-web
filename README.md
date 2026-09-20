@@ -25,13 +25,15 @@ in any text editor, near the top, in the block that starts with
 Edit the values there — nothing else in the file needs to change.
 
 ### 1) Photos
-- Drop your photos into `assets/images/` and name them `1.jpg`, `2.jpg`,
-  `3.jpg` ... matching the `src` values already listed in `CONFIG`
-  (`ringPhotos`, `trailPhotos`, `starfieldOne`, `starfieldTwo`). You can
-  rename the files instead of editing the code if that's easier — just
-  keep the names matching.
+- Drop your photos into `assets/images/` and name them `1.jpg` through
+  `16.jpg`, matching the `src` values already listed in `CONFIG`
+  (`ringPhotos`: 1–8, `starfieldOne`: 9–12, `starfieldTwo`: 13–16). You
+  can rename the files instead of editing the code if that's easier —
+  just keep the names matching.
 - Any slot without a real photo keeps showing a color placeholder, so
   it's safe to fill these in gradually.
+- 16 photos total makes the site "final." The scrapbook pages reuse the
+  same 8 `ringPhotos`, so no extra images are needed there.
 
 ### 2) The message
 - Edit `message` and `signature` inside `CONFIG` with your real note.

@@ -6,9 +6,15 @@ const CONFIG = {
   name: "Shruti",
   birthDate: "1999-09-21",      // YYYY-MM-DD
   // turningAge is computed below from birthDate vs today — no need to set it by hand.
-  message: `Happy Birthday, Shruti! This is a placeholder note — I’ll swap in the real
-      words soon, but the short version is: I love you more than words can say,
-      and I hope this year gives you every bit of joy you give everyone else.`,
+  message: `In every quiet moment and through every passing day,
+you bring a gentle light that words can hardly say.
+
+With you, every path makes sense, and every place feels like home.
+
+Happy Birthday, Shruti!
+
+Thank you for bringing so much peace, laughter, and beauty into my life.
+I can’t wait to build the rest of our journey together.`,
   signature: "— Pramod",
   finalWish: "Happy Birthday, my love. Here’s to us. 🤍",
 
@@ -36,21 +42,14 @@ const CONFIG = {
     { src: "assets/images/8.jpg", cap: "Mine" },
   ],
 
-  // Horizontal trail strip below the hero
-  trailPhotos: [
-    { src: "assets/images/9.jpg", cap: "us" }, { src: "assets/images/10.jpg", cap: "that day" },
-    { src: "assets/images/11.jpg", cap: "trip" }, { src: "assets/images/12.jpg", cap: "home" },
-    { src: "assets/images/13.jpg", cap: "smile" }, { src: "assets/images/14.jpg", cap: "silly" },
-  ],
-
   // Two starfield grids, each with tmp nickname labels
   starfieldOne: [
-    { src: "assets/images/15.jpg", cap: "Sweetheart" }, { src: "assets/images/16.jpg", cap: "Stunner" },
-    { src: "assets/images/17.jpg", cap: "Sunshine" }, { src: "assets/images/18.jpg", cap: "Darling" },
+    { src: "assets/images/9.jpg", cap: "Sweetheart" }, { src: "assets/images/10.jpg", cap: "Stunner" },
+    { src: "assets/images/11.jpg", cap: "Sunshine" }, { src: "assets/images/12.jpg", cap: "Darling" },
   ],
   starfieldTwo: [
-    { src: "assets/images/19.jpg", cap: "Baddie" }, { src: "assets/images/20.jpg", cap: "Angel" },
-    { src: "assets/images/21.jpg", cap: "Cutie" }, { src: "assets/images/22.jpg", cap: "Mine" },
+    { src: "assets/images/13.jpg", cap: "Baddie" }, { src: "assets/images/14.jpg", cap: "Angel" },
+    { src: "assets/images/15.jpg", cap: "Cutie" }, { src: "assets/images/16.jpg", cap: "Mine" },
   ],
 };
 
@@ -111,17 +110,6 @@ ringPhotos.forEach((p, i)=>{
   const g = gradients[i % gradients.length];
   wrap.innerHTML = `<div class="frame" style="--ph-a:${g[0]};--ph-b:${g[1]}"><img src="${p.src}" alt="" onerror="this.remove()"></div><div class="cap">${p.cap}</div>`;
   ring.appendChild(wrap);
-});
-
-/* trail strip */
-const trail = document.getElementById('trail');
-CONFIG.trailPhotos.forEach((p,i)=>{
-  const rot = (i % 2 === 0) ? -6 - i : 6 + i;
-  const pol = makePolaroid(p, i, rot);
-  pol.style.position = 'relative';
-  pol.style.marginTop = (i % 3 === 0) ? '0px' : (i % 3 === 1 ? '30px' : '-10px');
-  pol.innerHTML += `<span class="heart">❤</span>`;
-  trail.appendChild(pol);
 });
 
 /* balloon letters */
@@ -440,7 +428,7 @@ document.querySelectorAll('.starfield').forEach(section=>{
 /* ---------- one-section-per-scroll paging ---------- */
 (function(){
   const pages = Array.from(document.querySelectorAll(
-    '#age, #balloons, #hero, #trail, #star1, #scrapbook, #star2, #finale, footer'
+    '#age, #balloons, #hero, #star1, #scrapbook, #star2, #finale, footer'
   ));
   if(!pages.length) return;
 
@@ -469,7 +457,7 @@ document.querySelectorAll('.starfield').forEach(section=>{
   }
 
   function onWheel(e){
-    if(Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return; // horizontal gesture — let #trail scroll natively
+    if(Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return; // horizontal gesture — let it scroll natively
     e.preventDefault();
     if(animating) return;
     goTo(current + (e.deltaY > 0 ? 1 : -1));
@@ -503,28 +491,6 @@ document.querySelectorAll('.starfield').forEach(section=>{
 
 /* ---------- scrapbook carousel ---------- */
 const scrapbookSpreads = [
-  { theme:'keepsake', title:'little things I keep',
-    stickers:[
-      {e:'🌙', style:'top:6%; left:8%; --r:-10deg;'},
-      {e:'📷', style:'top:4%; right:10%; --r:8deg;'},
-      {e:'🌹', style:'top:40%; left:4%; --r:-6deg;'},
-      {e:'🎀', style:'bottom:20%; right:6%; --r:10deg;'},
-      {e:'✨', style:'bottom:8%; left:14%; --r:-4deg;'},
-      {e:'🎵', style:'top:36%; right:16%; --r:6deg;'},
-      {e:'💫', style:'top:20%; left:44%; --r:-8deg;'},
-      {e:'💌', style:'bottom:30%; left:36%; --r:12deg;'},
-    ],
-    butterflies:[
-      'top:16%; left:20%; --r:-14deg;',
-      'bottom:12%; right:30%; --r:10deg; animation-delay:1.4s;',
-      'top:54%; right:8%; --r:-6deg; animation-delay:2.6s;',
-    ],
-    tapes:['top:14%; left:30%;', 'top:44%; right:26%; --r:12deg;'],
-    photos:[
-      { p: CONFIG.ringPhotos[0], style:'top:12%; left:28%; --r:-4deg;' },
-      { p: CONFIG.ringPhotos[1], style:'top:38%; right:20%; --r:5deg;' },
-    ],
-  },
   { theme:'vinyl', title:'our soundtrack',
     stickers:[
       {e:'🎧', style:'top:8%; right:10%; --r:8deg;'},
