@@ -44,8 +44,12 @@ I can’t wait to build the rest of our journey together.`,
 
   // Two starfield grids, each with tmp nickname labels
   starfieldOne: [
-    { src: "assets/images/9.jpg", cap: "Sweetheart" }, { src: "assets/images/10.jpg", cap: "Stunner" },
-    { src: "assets/images/11.jpg", cap: "Sunshine" }, { src: "assets/images/12.jpg", cap: "Darling" },
+    { src: "assets/images/1.jpg", cap: "" }, { src: "assets/images/2.jpg", cap: "" },
+    { src: "assets/images/3.jpg", cap: "" }, { src: "assets/images/4.jpg", cap: "" },
+    { src: "assets/images/5.jpg", cap: "" }, { src: "assets/images/6.jpg", cap: "" },
+    { src: "assets/images/7.jpg", cap: "" }, { src: "assets/images/8.jpg", cap: "" },
+    { src: "assets/images/9.jpg", cap: "" }, { src: "assets/images/10.jpg", cap: "" },
+    { src: "assets/images/11.jpg", cap: "" }, { src: "assets/images/12.jpg", cap: "" },
   ],
 };
 
@@ -87,7 +91,7 @@ function makePolaroid({src, cap}, i, rot){
   const el = document.createElement('div');
   el.className = 'polaroid';
   const g = gradients[i % gradients.length];
-  el.innerHTML = `<div class="frame" style="--ph-a:${g[0]};--ph-b:${g[1]}"><img src="${src}" alt="${cap}" loading="lazy" onerror="this.remove()"></div>`;
+  el.innerHTML = `<div class="frame" style="--ph-a:${g[0]};--ph-b:${g[1]}"><img src="${src}" alt="${cap}" loading="lazy" onload="this.parentElement.classList.add('has-photo')" onerror="this.remove()"></div>`;
   if(rot !== undefined) el.style.setProperty('--r', rot+'deg');
   return el;
 }
@@ -104,7 +108,7 @@ ringPhotos.forEach((p, i)=>{
   wrap.style.marginTop = '-84px';
   wrap.style.transform = `rotate(${angle}deg) translate(${R}px) rotate(${-angle}deg)`;
   const g = gradients[i % gradients.length];
-  wrap.innerHTML = `<div class="frame" style="--ph-a:${g[0]};--ph-b:${g[1]}"><img src="${p.src}" alt="${p.cap}" loading="lazy" onerror="this.remove()"></div>`;
+  wrap.innerHTML = `<div class="frame" style="--ph-a:${g[0]};--ph-b:${g[1]}"><img src="${p.src}" alt="${p.cap}" loading="lazy" onload="this.parentElement.classList.add('has-photo')" onerror="this.remove()"></div>`;
   ring.appendChild(wrap);
 });
 
