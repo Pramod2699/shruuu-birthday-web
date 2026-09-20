@@ -47,10 +47,6 @@ I can’t wait to build the rest of our journey together.`,
     { src: "assets/images/9.jpg", cap: "Sweetheart" }, { src: "assets/images/10.jpg", cap: "Stunner" },
     { src: "assets/images/11.jpg", cap: "Sunshine" }, { src: "assets/images/12.jpg", cap: "Darling" },
   ],
-  starfieldTwo: [
-    { src: "assets/images/13.jpg", cap: "Baddie" }, { src: "assets/images/14.jpg", cap: "Angel" },
-    { src: "assets/images/15.jpg", cap: "Cutie" }, { src: "assets/images/16.jpg", cap: "Mine" },
-  ],
 };
 
 /* ---------- derive turning age from birthDate vs. today ---------- */
@@ -414,14 +410,13 @@ function initStarCanvas(section, photos){
   resize(); draw();
 }
 document.querySelectorAll('.starfield').forEach(section=>{
-  const photos = section.id === 'star2' ? CONFIG.starfieldTwo : CONFIG.starfieldOne;
-  initStarCanvas(section, photos);
+  initStarCanvas(section, CONFIG.starfieldOne);
 });
 
 /* ---------- one-section-per-scroll paging ---------- */
 (function(){
   const pages = Array.from(document.querySelectorAll(
-    '#age, #balloons, #hero, #star1, #scrapbook, #star2, #finale, footer'
+    '#age, #balloons, #hero, #star1, #finale, footer'
   ));
   if(!pages.length) return;
 
@@ -481,116 +476,6 @@ document.querySelectorAll('.starfield').forEach(section=>{
   window.addEventListener('touchend', onTouchEnd, { passive:true });
   window.addEventListener('keydown', onKey);
 })();
-
-/* ---------- scrapbook carousel ---------- */
-const scrapbookSpreads = [
-  { theme:'vinyl', title:'our soundtrack',
-    stickers:[
-      {e:'🎧', style:'top:8%; right:10%; --r:8deg;'},
-      {e:'💋', style:'bottom:14%; left:10%; --r:-10deg;'},
-      {e:'🎶', style:'top:44%; left:6%; --r:-6deg;'},
-      {e:'✨', style:'bottom:8%; right:34%; --r:6deg;'},
-    ],
-    decos:[
-      { type:'vinyl', style:'top:10%; left:38%;' },
-      { type:'cassette', style:'bottom:12%; right:8%; --r:-8deg;' },
-    ],
-    photos:[
-      { p: CONFIG.ringPhotos[2], style:'top:34%; left:8%; --r:-5deg;' },
-      { p: CONFIG.ringPhotos[3], style:'top:14%; right:26%; --r:6deg;' },
-    ],
-  },
-  { theme:'fabric', title:'cozy days',
-    stickers:[
-      {e:'🧸', style:'top:6%; left:10%; --r:-8deg;'},
-      {e:'🌼', style:'top:8%; right:12%; --r:8deg;'},
-      {e:'🎀', style:'bottom:16%; left:8%; --r:-10deg;'},
-      {e:'🍓', style:'bottom:10%; right:34%; --r:6deg;'},
-    ],
-    tapes:['top:16%; left:44%;'],
-    photos:[
-      { p: CONFIG.ringPhotos[4], style:'top:34%; left:30%; --r:-4deg;' },
-      { p: CONFIG.ringPhotos[5], style:'top:10%; right:8%; --r:5deg;' },
-    ],
-  },
-  { theme:'kraft', title:'our little world',
-    stickers:[
-      {e:'⭐', style:'top:8%; left:8%; --r:-8deg;'},
-      {e:'✉️', style:'bottom:12%; right:10%; --r:8deg;'},
-      {e:'🌙', style:'top:44%; right:6%; --r:-6deg;'},
-      {e:'📌', style:'bottom:34%; left:6%; --r:10deg;'},
-    ],
-    tapes:['top:12%; right:38%;'],
-    photos:[
-      { p: CONFIG.ringPhotos[6], style:'top:14%; left:26%; --r:-5deg;' },
-      { p: CONFIG.ringPhotos[7], style:'top:38%; right:22%; --r:6deg;' },
-    ],
-  },
-];
-
-let sbPhotoIndex = 0;
-function buildScrapbook(){
-  const carousel = document.getElementById('scrapbook-carousel');
-  const dotsWrap = document.getElementById('scrapbook-dots');
-  scrapbookSpreads.forEach((spread, i)=>{
-    const el = document.createElement('div');
-    el.className = `spread theme-${spread.theme}` + (i===0 ? ' active' : '');
-    const h3 = document.createElement('h3');
-    h3.textContent = spread.title;
-    el.appendChild(h3);
-    (spread.stickers||[]).forEach(st=>{
-      const s = document.createElement('span');
-      s.className = 'sticker';
-      s.setAttribute('style', st.style);
-      s.textContent = st.e;
-      el.appendChild(s);
-    });
-    (spread.butterflies||[]).forEach(style=>{
-      const s = document.createElement('span');
-      s.className = 'sticker butterfly';
-      s.setAttribute('style', style);
-      s.textContent = '🦋';
-      el.appendChild(s);
-    });
-    (spread.tapes||[]).forEach(style=>{
-      const t = document.createElement('div');
-      t.className = 'tape';
-      t.setAttribute('style', style);
-      el.appendChild(t);
-    });
-    (spread.decos||[]).forEach(d=>{
-      const dEl = document.createElement('div');
-      dEl.className = d.type === 'vinyl' ? 'vinyl-deco' : 'cassette-deco';
-      dEl.setAttribute('style', d.style);
-      el.appendChild(dEl);
-    });
-    (spread.photos||[]).forEach(ph=>{
-      const pol = makePolaroid(ph.p, sbPhotoIndex++, undefined);
-      pol.setAttribute('style', (pol.getAttribute('style')||'') + ph.style);
-      el.appendChild(pol);
-    });
-    carousel.appendChild(el);
-
-    const dot = document.createElement('button');
-    dot.type = 'button';
-    dot.className = 'dot' + (i===0 ? ' active' : '');
-    dot.setAttribute('aria-label', `Go to page ${i+1}: ${spread.title}`);
-    dot.addEventListener('click', ()=> showSpread(i));
-    dotsWrap.appendChild(dot);
-  });
-}
-let sbCurrent = 0;
-function showSpread(i){
-  const spreads = document.querySelectorAll('#scrapbook-carousel .spread');
-  const dots = document.querySelectorAll('#scrapbook-dots .dot');
-  sbCurrent = (i + spreads.length) % spreads.length;
-  spreads.forEach((el, idx)=> el.classList.toggle('active', idx === sbCurrent));
-  dots.forEach((d, idx)=> d.setAttribute('aria-current', idx === sbCurrent ? 'true' : 'false'));
-  dots.forEach((d, idx)=> d.classList.toggle('active', idx === sbCurrent));
-}
-buildScrapbook();
-document.getElementById('sb-prev').addEventListener('click', ()=> showSpread(sbCurrent - 1));
-document.getElementById('sb-next').addEventListener('click', ()=> showSpread(sbCurrent + 1));
 
 /* ---------- finale candle + confetti ---------- */
 const candleWrap = document.getElementById('candle-wrap');
