@@ -43,14 +43,8 @@ I can’t wait to build the rest of our journey together.`,
   ],
 
   // Two starfield grids, each with tmp nickname labels
-  starfieldOne: [
-    { src: "assets/images/1.jpg", cap: "" }, { src: "assets/images/2.jpg", cap: "" },
-    { src: "assets/images/3.jpg", cap: "" }, { src: "assets/images/4.jpg", cap: "" },
-    { src: "assets/images/5.jpg", cap: "" }, { src: "assets/images/6.jpg", cap: "" },
-    { src: "assets/images/7.jpg", cap: "" }, { src: "assets/images/8.jpg", cap: "" },
-    { src: "assets/images/9.jpg", cap: "" }, { src: "assets/images/10.jpg", cap: "" },
-    { src: "assets/images/11.jpg", cap: "" }, { src: "assets/images/12.jpg", cap: "" },
-  ],
+  // every photo in assets/images shows up tumbling through the universe section
+  starfieldOne: Array.from({length: 19}, (_, i) => ({ src: `assets/images/${i+1}.jpg`, cap: "" })),
 };
 
 /* ---------- derive turning age from birthDate vs. today ---------- */

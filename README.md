@@ -25,14 +25,16 @@ in any text editor, near the top, in the block that starts with
 Edit the values there — nothing else in the file needs to change.
 
 ### 1) Photos
-- Drop your photos into `assets/images/` and name them `1.jpg` through
-  `12.jpg`, matching the `src` values already listed in `CONFIG`
-  (`ringPhotos`: 1–8, `starfieldOne`: 9–12). You can rename the files
-  instead of editing the code if that's easier — just keep the names
-  matching.
+- Drop your photos into `assets/images/` named `1.jpg`, `2.jpg`, `3.jpg`
+  and so on, with no gaps.
+- `ringPhotos` (the hero collage) always uses `1.jpg`–`8.jpg`.
+- `starfieldOne` (the tumbling universe section) shows every photo from
+  `1.jpg` up to whatever count is set in `CONFIG` — look for
+  `Array.from({length: 19}, ...)` and bump the `19` to match your total
+  photo count whenever you add more.
 - Any slot without a real photo keeps showing a color placeholder, so
   it's safe to fill these in gradually.
-- 12 photos total makes the site "final."
+- 19 photos are currently in place.
 
 ### 2) The message
 - Edit `message` and `signature` inside `CONFIG` with your real note.
